@@ -1,48 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Loan Prediction</title>
-    <link rel="stylesheet" href="C:\Users\co.magic\Desktop\ML-repo\ml-project-\static\style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Approval Prediction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
-    <div class="container">
-        <h1>Loan Approval Predictor</h1>
-        <form id="loanForm">
-            <label>Annual Income:</label>
-            <input type="number" name="income" required>
-            
-            <label>Credit Score:</label>
-            <input type="number" name="credit_score" required>
-            
-            <label>Loan Amount:</label>
-            <input type="number" name="loan_amount" required>
-            
-            <button type="submit">Predict</button>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-center mb-8">Loan Approval Prediction</h1>
+        <form action="/predict" method="POST" class="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Married</label>
+                <select name="married" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Dependents</label>
+                <select name="dependents" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3+</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Education</label>
+                <select name="education" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <option value="Graduate">Graduate</option>
+                    <option value="Not Graduate">Not Graduate</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Self Employed</label>
+                <select name="self_employed" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Applicant Income</label>
+                <input type="number" name="applicant_income" step="any" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Coapplicant Income</label>
+                <input type="number" name="coapplicant_income" step="any" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Loan Amount</label>
+                <input type="number" name="loan_amount" step="any" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Loan Amount Term</label>
+                <input type="number" name="loan_amount_term" step="any" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Credit History</label>
+                <input type="number" name="credit_history" step="any" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Property Area</label>
+                <select name="property_area" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <option value="Rural">Rural</option>
+                    <option value="Semiurban">Semiurban</option>
+                    <option value="Urban">Urban</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">Predict</button>
         </form>
-        
-        <div id="results">
-            <h2>Results:</h2>
-            <p><strong>Model 1 (Logistic Regression):</strong> <span id="model1">-</span></p>
-            <p><strong>Model 2 (Random Forest):</strong> <span id="model2">-</span></p>
-            <p><strong>Model 3 (SVM):</strong> <span id="model3">-</span></p>
-        </div>
-    </div>
 
-    <script>
-        document.getElementById('loanForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const response = await fetch('/predict', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            
-            // Display results
-            document.getElementById('model1').textContent = result.model1;
-            document.getElementById('model2').textContent = result.model2;
-            document.getElementById('model3').textContent = result.model3;
-        });
-    </script>
+        {% if predictions %}
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+            <h2 class="text-2xl font-bold mb-4">Prediction Results</h2>
+            <ul>
+                <li class="mb-2"><strong>SVM:</strong> {{ predictions['SVM'] }}</li>
+                <li class="mb-2"><strong>Random Forest:</strong> {{ predictions['Random Forest'] }}</li>
+                <li class="mb-2"><strong>Logistic Regression:</strong> {{ predictions['Logistic Regression'] }}</li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>
