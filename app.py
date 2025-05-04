@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Load the trained models
 with open('models/svm.pkl', 'rb') as f:
     svm_model = pickle.load(f)
-with open('models/randforest.pkl', 'rb') as f:
+with open('models/Knn.pkl', 'rb') as f:
     rf_model = pickle.load(f)
 with open('models/logistic.pkl', 'rb') as f:
     logistic_model = pickle.load(f)
@@ -62,7 +62,7 @@ def predict():
     pred_map = {0: 'Not Approved', 1: 'Approved'}
     predictions = {
         'SVM': pred_map[svm_pred],
-        'Random Forest': pred_map[rf_pred],
+        'Knn': pred_map[rf_pred],
         'Logistic Regression': pred_map[logistic_pred]
     }
 
