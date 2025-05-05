@@ -6,6 +6,22 @@
     <title>Loan Approval Prediction</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .confusion-matrix-table {
+            border-collapse: collapse;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .confusion-matrix-table th, .confusion-matrix-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .confusion-matrix-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto p-6">
@@ -55,11 +71,25 @@
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Loan Amount Term</label>
-                <input type="number" name="loan_amount_term" step="any" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                <select name="loan_amount_term" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                    <option value="12">12 days (very short term)</option>
+                    <option value="36">36 days (~1 month)</option>
+                    <option value="60">60 days (~2 months)</option>
+                    <option value="84">84 days (~3 months)</option>
+                    <option value="120">120 days (~4 months)</option>
+                    <option value="180">180 days (6 months)</option>
+                    <option value="240">240 days (8 months)</option>
+                    <option value="300">300 days (~10 months)</option>
+                    <option value="360" selected>360 days (12 months/1 year - most common)</option>
+                    <option value="480">480 days (16 months)</option>
+                </select>
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Credit History</label>
-                <input type="number" name="credit_history" step="any" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                <select name="credit_history" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                    <option value="0">0 (Bad Credit History)</option>
+                    <option value="1">1 (Good Credit History)</option>
+                </select>
             </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Property Area</label>
@@ -77,8 +107,97 @@
             <h2 class="text-2xl font-bold mb-4">Prediction Results</h2>
             <ul>
                 <li class="mb-2"><strong>SVM:</strong> {{ predictions['SVM'] }}</li>
-                <li class="mb-2"><strong>KNN:</strong> {{ predictions['Knn'] }}</li>
+                <li class="mb-2"><strong>KNN:</strong> {{ predictions['KNN'] }}</li>
                 <li class="mb-2"><strong>Logistic Regression:</strong> {{ predictions['Logistic Regression'] }}</li>
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if metrics %}
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
+            <h2 class="text-2xl font-bold mb-4">Model Performance Metrics</h2>
+            <ul>
+                <li class="mb-4">
+                    <strong>SVM Metrics:</strong> 
+                    Accuracy: {{ (metrics['SVM']['accuracy'] * 100)|round(2) }}%, 
+                    Precision: {{ (metrics['SVM']['precision'] * 100)|round(2) }}%, 
+                    Recall: {{ (metrics['SVM']['recall'] * 100)|round(2) }}%, 
+                    F1-Score: {{ (metrics['SVM']['f1_score'] * 100)|round(2) }}%
+                    <div class="mt-2">
+                        <strong>Confusion Matrix:</strong>
+                        <table class="confusion-matrix-table">
+                            <tr>
+                                <th></th>
+                                <th>Predicted Not Approved</th>
+                                <th>Predicted Approved</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Actual Not Approved</strong></td>
+                                <td>{{ metrics['SVM']['confusion_matrix'][0][0] }}</td>
+                                <td>{{ metrics['SVM']['confusion_matrix'][0][1] }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Actual Approved</strong></td>
+                                <td>{{ metrics['SVM']['confusion_matrix'][1][0] }}</td>
+                                <td>{{ metrics['SVM']['confusion_matrix'][1][1] }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </li>
+                <li class="mb-4">
+                    <strong>KNN Metrics:</strong> 
+                    Accuracy: {{ (metrics['KNN']['accuracy'] * 100)|round(2) }}%, 
+                    Precision: {{ (metrics['KNN']['precision'] * 100)|round(2) }}%, 
+                    Recall: {{ (metrics['KNN']['recall'] * 100)|round(2) }}%, 
+                    F1-Score: {{ (metrics['KNN']['f1_score'] * 100)|round(2) }}%
+                    <div class="mt-2">
+                        <strong>Confusion Matrix:</strong>
+                        <table class="confusion-matrix-table">
+                            <tr>
+                                <th></th>
+                                <th>Predicted Not Approved</th>
+                                <th>Predicted Approved</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Actual Not Approved</strong></td>
+                                <td>{{ metrics['KNN']['confusion_matrix'][0][0] }}</td>
+                                <td>{{ metrics['KNN']['confusion_matrix'][0][1] }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Actual Approved</strong></td>
+                                <td>{{ metrics['KNN']['confusion_matrix'][1][0] }}</td>
+                                <td>{{ metrics['KNN']['confusion_matrix'][1][1] }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </li>
+                <li class="mb-4">
+                    <strong>Logistic Regression Metrics:</strong> 
+                    Accuracy: {{ (metrics['Logistic Regression']['accuracy'] * 100)|round(2) }}%, 
+                    Precision: {{ (metrics['Logistic Regression']['precision'] * 100)|round(2) }}%, 
+                    Recall: {{ (metrics['Logistic Regression']['recall'] * 100)|round(2) }}%, 
+                    F1-Score: {{ (metrics['Logistic Regression']['f1_score'] * 100)|round(2) }}%
+                    <div class="mt-2">
+                        <strong>Confusion Matrix:</strong>
+                        <table class="confusion-matrix-table">
+                            <tr>
+                                <th></th>
+                                <th>Predicted Not Approved</th>
+                                <th>Predicted Approved</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Actual Not Approved</strong></td>
+                                <td>{{ metrics['Logistic Regression']['confusion_matrix'][0][0] }}</td>
+                                <td>{{ metrics['Logistic Regression']['confusion_matrix'][0][1] }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Actual Approved</strong></td>
+                                <td>{{ metrics['Logistic Regression']['confusion_matrix'][1][0] }}</td>
+                                <td>{{ metrics['Logistic Regression']['confusion_matrix'][1][1] }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </li>
             </ul>
         </div>
         {% endif %}
