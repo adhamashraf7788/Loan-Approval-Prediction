@@ -25,13 +25,13 @@ mappings = {
 # Load metrics from JSON files
 def load_metrics():
     metrics = {}
-    with open('SVM_metrics.json', 'r') as f:
+    with open('metrics_json_files/SVM_metrics.json', 'r') as f:
         data = json.load(f)
         metrics['SVM'] = data['metrics']  # Extract the 'metrics' field
-    with open('KNN_metrics.json', 'r') as f:
+    with open('metrics_json_files/KNN_metrics.json', 'r') as f:
         data = json.load(f)
         metrics['KNN'] = data['metrics']
-    with open('Logistic_metrics.json', 'r') as f:
+    with open('metrics_json_files/Logistic_metrics.json', 'r') as f:
         data = json.load(f)
         metrics['Logistic Regression'] = data['metrics']
     return metrics
